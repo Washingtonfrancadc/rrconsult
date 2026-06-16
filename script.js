@@ -2662,6 +2662,25 @@ function renderizarTrackCompleto() {
 
   carrosselPaginaAtual = 0;
   atualizarCarrossel();
+
+  // Adiciona swipe para celular (uma vez apenas)
+  if (!viewport.dataset.swipeAtivo) {
+    viewport.dataset.swipeAtivo = "1";
+    let touchStartX = 0;
+    viewport.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      { passive: true },
+    );
+    viewport.addEventListener("touchend", (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        moverCarrossel(diff > 0 ? 1 : -1);
+      }
+    });
+  }
 }
 
 function atualizarCarrossel() {
