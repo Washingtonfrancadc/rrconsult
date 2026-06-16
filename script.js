@@ -580,13 +580,18 @@ async function handleSetPassword() {
               apikey: SERVICE_ROLE_KEY,
             };
 
-            // Busca usuário pelo email na API admin
-            const res = await fetch(
-              `${SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
-              { headers },
-            );
+            // Busca TODOS os usuários e encontra pelo email
+            const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
+              headers,
+            });
             const usersData = await res.json();
-            const existingUser = usersData?.users?.[0];
+            console.log(
+              "Admin API - users encontrados:",
+              usersData?.users?.length,
+            );
+            const existingUser = (usersData?.users || []).find(
+              (u) => u.email?.toLowerCase() === email,
+            );
 
             if (existingUser?.id) {
               // Atualiza a senha
@@ -1418,7 +1423,7 @@ function renderListaAlunos() {
                         <option value="Feminino" ${al.sexo === "Feminino" ? "selected" : ""}>Feminino</option>
                     </select>
                 </div>
-                <button class="btn btn-alunos" onclick="renderListaAlunos()" title="Editar" style="padding: 6px 8px; font-size: 13px;">
+                <button class="btn btn-alunos" onclick="atualizarAlunoBanco(${idx})" title="Salvar alterações" style="padding: 6px 8px; font-size: 13px;">
                     <i class="fa-solid fa-pen"></i>
                 </button>
                 <button class="btn btn-remover" onclick="confirmarDeletarAluno(${idx})" title="Excluir" style="padding: 6px 8px; font-size: 13px;">
@@ -1437,6 +1442,17 @@ async function atualizarAlunoBanco(idx) {
     .update({ nome: al.nome, email: al.email, sexo: al.sexo || null })
     .eq("id", al.id);
   document.getElementById("selectAluno").options[idx].text = al.nome;
+
+  // Feedback visual no botão
+  const botoes = document.querySelectorAll(
+    "#listaAlunosParaEditar .btn-alunos",
+  );
+  if (botoes[idx]) {
+    botoes[idx].style.background = "var(--verde)";
+    setTimeout(() => {
+      botoes[idx].style.background = "";
+    }, 800);
+  }
 }
 
 function confirmarDeletarAluno(idx) {

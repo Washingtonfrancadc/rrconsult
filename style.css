@@ -92,6 +92,10 @@ body {
     padding: 20px;
 }
 
+#appContainer {
+    display: none;
+}
+
 /* --- SISTEMA DE ANIMAÇÃO ACORDEÃO --- */
 .corpo-recolhivel {
     display: grid;
