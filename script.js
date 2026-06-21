@@ -781,6 +781,140 @@ async function handleLogout() {
   mostrarTelaLogin(true);
 }
 
+// === MUDAR SENHA (ALUNO LOGADO) ===
+
+function abrirModalMudarSenha() {
+  document.getElementById("mudar-senha-nova").value = "";
+  document.getElementById("mudar-senha-confirmar").value = "";
+  document.getElementById("modalMudarSenha").style.display = "flex";
+}
+
+function fecharModalMudarSenha() {
+  document.getElementById("modalMudarSenha").style.display = "none";
+}
+
+async function handleMudarSenha() {
+  const novaSenha = document.getElementById("mudar-senha-nova").value;
+  const confirmarSenha = document.getElementById("mudar-senha-confirmar").value;
+
+  if (!novaSenha) return alert("Digite a nova senha.");
+  if (novaSenha !== confirmarSenha) return alert("As senhas não conferem.");
+  if (novaSenha.length < 6)
+    return alert("A senha deve ter no mínimo 6 caracteres.");
+
+  const btn = document.querySelector("#modalMudarSenha .btn-salvar");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Alterando...';
+  }
+
+  const { error } = await _supabase.auth.updateUser({ password: novaSenha });
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Alterar senha';
+  }
+
+  if (error) {
+    return alert("Erro ao alterar senha: " + error.message);
+  }
+
+  alert("Senha alterada com sucesso!");
+  fecharModalMudarSenha();
+}
+
+// === MUDAR E-MAIL (ALUNO LOGADO) ===
+
+function abrirModalMudarEmail() {
+  document.getElementById("mudar-email-atual").textContent =
+    currentUser.email || "—";
+  document.getElementById("mudar-email-novo").value = "";
+  document.getElementById("mudar-email-confirmar").value = "";
+  document.getElementById("mudar-email-senha").value = "";
+  document.getElementById("modalMudarEmail").style.display = "flex";
+}
+
+function fecharModalMudarEmail() {
+  document.getElementById("modalMudarEmail").style.display = "none";
+}
+
+async function handleMudarEmail() {
+  const senhaAtual = document.getElementById("mudar-email-senha").value;
+  const novoEmail = normalizeEmail(
+    document.getElementById("mudar-email-novo").value,
+  );
+  const confirmarEmail = normalizeEmail(
+    document.getElementById("mudar-email-confirmar").value,
+  );
+
+  if (!novoEmail) return alert("Digite o novo e-mail.");
+  if (!validarEmail(novoEmail)) return alert("E-mail inválido.");
+  if (novoEmail !== confirmarEmail) return alert("Os e-mails não conferem.");
+  if (novoEmail === normalizeEmail(currentUser.email))
+    return alert("O novo e-mail é igual ao atual.");
+  if (!senhaAtual) return alert("Digite sua senha atual para confirmar.");
+
+  const btn = document.querySelector("#modalMudarEmail .btn-salvar");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Alterando...';
+  }
+
+  const emailAtual = normalizeEmail(currentUser.email);
+
+  // Reautentica com a senha atual antes de alterar o e-mail
+  const { error: reauthError } = await _supabase.auth.signInWithPassword({
+    email: emailAtual,
+    password: senhaAtual,
+  });
+
+  if (reauthError) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Alterar e-mail';
+    }
+    return alert("Senha atual incorreta. Tente novamente.");
+  }
+
+  // Agora altera o e-mail no auth
+  const { data, error } = await _supabase.auth.updateUser({
+    email: novoEmail,
+  });
+
+  if (error) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Alterar e-mail';
+    }
+    return alert(
+      "Erro ao alterar e-mail: " +
+        error.message +
+        ". Verifique se o e-mail já não está em uso.",
+    );
+  }
+
+  // Também atualiza o e-mail na tabela "alunos"
+  if (currentUser.alunoId) {
+    await _supabase
+      .from("alunos")
+      .update({ email: novoEmail })
+      .eq("id", currentUser.alunoId);
+  }
+
+  // Atualiza no objeto local
+  currentUser.email = novoEmail;
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Alterar e-mail';
+  }
+
+  alert(
+    "E-mail alterado com sucesso! Verifique sua caixa de entrada (inclusive spam) no novo e-mail para confirmar a alteração.",
+  );
+  fecharModalMudarEmail();
+}
+
 // --- FUNÇÃO AUXILIAR DE RENDERIZAÇÃO DE SELETORES (SCROLL) ---
 function gerarSelectHtml(lista, valorAtual, onChangeStr) {
   const stringLogicaScroll = `event.preventDefault(); if(event.deltaY > 0) { if(this.selectedIndex < this.options.length - 1) { this.selectedIndex++; this.dispatchEvent(new Event('change')); } } else { if(this.selectedIndex > 0) { this.selectedIndex--; this.dispatchEvent(new Event('change')); } }`;
@@ -861,13 +995,17 @@ async function carregarDadosDoAlunoLogado() {
   await puxarDadosDoAlunoDoBanco();
   renderizarInterface();
 
-  // Mostra o botão sair flutuante (depois do refreshAuthUI para não sobrescrever)
-  const btnSair = document.getElementById("btnLogout");
-  btnSair.style.display = "flex";
-  btnSair.style.position = "fixed";
-  btnSair.style.top = "10px";
-  btnSair.style.right = "10px";
-  btnSair.style.zIndex = "999";
+  // Mostra os botões de ação do aluno (Mudar Senha, Mudar E-mail, Sair)
+  const acoesAluno = document.getElementById("acoesAluno");
+  acoesAluno.style.display = "flex";
+  acoesAluno.style.position = "fixed";
+  acoesAluno.style.top = "10px";
+  acoesAluno.style.left = "50%";
+  acoesAluno.style.transform = "translateX(-50%)";
+  acoesAluno.style.zIndex = "999";
+
+  // Espaço no topo para não cobrir o nome do aluno
+  document.querySelector(".header-app").style.paddingTop = "10px";
 }
 
 async function carregarDadosDoTreinadorLogado() {

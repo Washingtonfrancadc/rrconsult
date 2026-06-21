@@ -372,6 +372,383 @@
             </div>
         </div>
 
+        <!-- Modal Mudar Senha (aluno logado) -->
+        <div
+            class="modal-biblioteca"
+            id="modalMudarSenha"
+            style="display: none"
+        >
+            <div class="modal-conteudo" style="max-width: 420px">
+                <div class="modal-header">
+                    <h3 style="color: white">
+                        <i
+                            class="fa-solid fa-key"
+                            style="color: var(--cor-neon); font-size: 18px"
+                        ></i>
+                        Mudar Senha
+                    </h3>
+                    <button
+                        onclick="fecharModalMudarSenha()"
+                        style="
+                            background: none;
+                            border: none;
+                            color: white;
+                            font-size: 22px;
+                            cursor: pointer;
+                            opacity: 0.7;
+                            transition: 0.2s;
+                        "
+                        onmouseover="this.style.opacity = '1'"
+                        onmouseout="this.style.opacity = '0.7'"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 30px 28px">
+                    <form
+                        onsubmit="
+                            event.preventDefault();
+                            handleMudarSenha();
+                        "
+                        style="display: flex; flex-direction: column; gap: 16px"
+                    >
+                        <div style="text-align: center">
+                            <div
+                                style="
+                                    width: 56px;
+                                    height: 56px;
+                                    border-radius: 50%;
+                                    background: rgba(222, 255, 154, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin: 0 auto 14px;
+                                "
+                            >
+                                <i
+                                    class="fa-solid fa-lock"
+                                    style="
+                                        font-size: 22px;
+                                        color: var(--cor-neon);
+                                    "
+                                ></i>
+                            </div>
+                            <p
+                                style="
+                                    color: var(--texto-mutado);
+                                    font-size: 14px;
+                                    line-height: 1.5;
+                                    margin: 0;
+                                "
+                            >
+                                Escolha uma nova senha forte para proteger sua
+                                conta.
+                            </p>
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(15, 23, 42, 0.6);
+                                border-radius: 10px;
+                                padding: 6px 14px;
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-key"
+                                style="
+                                    color: var(--texto-mutado);
+                                    font-size: 14px;
+                                "
+                            ></i>
+                            <input
+                                type="password"
+                                id="mudar-senha-nova"
+                                class="input-inline"
+                                placeholder="Nova senha"
+                                autocomplete="new-password"
+                                style="
+                                    margin: 0;
+                                    background: transparent;
+                                    border: none;
+                                    flex: 1;
+                                "
+                                required
+                            />
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(15, 23, 42, 0.6);
+                                border-radius: 10px;
+                                padding: 6px 14px;
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-check-circle"
+                                style="
+                                    color: var(--texto-mutado);
+                                    font-size: 14px;
+                                "
+                            ></i>
+                            <input
+                                type="password"
+                                id="mudar-senha-confirmar"
+                                class="input-inline"
+                                placeholder="Confirmar nova senha"
+                                autocomplete="new-password"
+                                style="
+                                    margin: 0;
+                                    background: transparent;
+                                    border: none;
+                                    flex: 1;
+                                "
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-salvar"
+                            style="
+                                width: 100%;
+                                justify-content: center;
+                                padding: 13px;
+                                border-radius: 10px;
+                                font-size: 15px;
+                                margin-top: 4px;
+                            "
+                        >
+                            <i class="fa-solid fa-check"></i> Alterar senha
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Mudar E-mail (aluno logado) -->
+        <div
+            class="modal-biblioteca"
+            id="modalMudarEmail"
+            style="display: none"
+        >
+            <div class="modal-conteudo" style="max-width: 420px">
+                <div class="modal-header">
+                    <h3 style="color: white">
+                        <i
+                            class="fa-solid fa-envelope"
+                            style="color: var(--cor-neon); font-size: 18px"
+                        ></i>
+                        Mudar E-mail
+                    </h3>
+                    <button
+                        onclick="fecharModalMudarEmail()"
+                        style="
+                            background: none;
+                            border: none;
+                            color: white;
+                            font-size: 22px;
+                            cursor: pointer;
+                            opacity: 0.7;
+                            transition: 0.2s;
+                        "
+                        onmouseover="this.style.opacity = '1'"
+                        onmouseout="this.style.opacity = '0.7'"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 30px 28px">
+                    <form
+                        onsubmit="
+                            event.preventDefault();
+                            handleMudarEmail();
+                        "
+                        style="display: flex; flex-direction: column; gap: 16px"
+                    >
+                        <div style="text-align: center">
+                            <div
+                                style="
+                                    width: 56px;
+                                    height: 56px;
+                                    border-radius: 50%;
+                                    background: rgba(222, 255, 154, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin: 0 auto 14px;
+                                "
+                            >
+                                <i
+                                    class="fa-solid fa-at"
+                                    style="
+                                        font-size: 22px;
+                                        color: var(--cor-neon);
+                                    "
+                                ></i>
+                            </div>
+
+                            <div
+                                style="
+                                    background: rgba(15, 23, 42, 0.6);
+                                    border-radius: 10px;
+                                    padding: 10px 16px;
+                                    margin-bottom: 4px;
+                                    border: 1px solid rgba(148, 163, 184, 0.12);
+                                "
+                            >
+                                <p
+                                    style="
+                                        color: var(--texto-mutado);
+                                        font-size: 11px;
+                                        margin: 0 0 2px 0;
+                                        text-transform: uppercase;
+                                        letter-spacing: 0.5px;
+                                    "
+                                >
+                                    E-mail atual
+                                </p>
+                                <p
+                                    style="
+                                        color: white;
+                                        font-weight: 600;
+                                        margin: 0;
+                                        font-size: 15px;
+                                        word-break: break-all;
+                                    "
+                                    id="mudar-email-atual"
+                                ></p>
+                            </div>
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(15, 23, 42, 0.6);
+                                border-radius: 10px;
+                                padding: 6px 14px;
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-envelope"
+                                style="
+                                    color: var(--texto-mutado);
+                                    font-size: 14px;
+                                "
+                            ></i>
+                            <input
+                                type="email"
+                                id="mudar-email-novo"
+                                class="input-inline"
+                                placeholder="Novo e-mail"
+                                autocomplete="email"
+                                style="
+                                    margin: 0;
+                                    background: transparent;
+                                    border: none;
+                                    flex: 1;
+                                "
+                                required
+                            />
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(15, 23, 42, 0.6);
+                                border-radius: 10px;
+                                padding: 6px 14px;
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-check-circle"
+                                style="
+                                    color: var(--texto-mutado);
+                                    font-size: 14px;
+                                "
+                            ></i>
+                            <input
+                                type="email"
+                                id="mudar-email-confirmar"
+                                class="input-inline"
+                                placeholder="Confirmar novo e-mail"
+                                autocomplete="email"
+                                style="
+                                    margin: 0;
+                                    background: transparent;
+                                    border: none;
+                                    flex: 1;
+                                "
+                                required
+                            />
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(15, 23, 42, 0.6);
+                                border-radius: 10px;
+                                padding: 6px 14px;
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-lock"
+                                style="
+                                    color: var(--texto-mutado);
+                                    font-size: 14px;
+                                "
+                            ></i>
+                            <input
+                                type="password"
+                                id="mudar-email-senha"
+                                class="input-inline"
+                                placeholder="Sua senha atual (para confirmar)"
+                                autocomplete="current-password"
+                                style="
+                                    margin: 0;
+                                    background: transparent;
+                                    border: none;
+                                    flex: 1;
+                                "
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-salvar"
+                            style="
+                                width: 100%;
+                                justify-content: center;
+                                padding: 13px;
+                                border-radius: 10px;
+                                font-size: 15px;
+                                margin-top: 4px;
+                            "
+                        >
+                            <i class="fa-solid fa-check"></i> Alterar e-mail
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div class="container" id="appContainer">
             <div class="painel-admin" id="painelAdmin">
                 <h3><i class="fa-solid fa-user-gear"></i> Modo Treinador</h3>
@@ -412,14 +789,32 @@
                 </div>
             </div>
 
-            <button
-                class="btn btn-remover"
-                id="btnLogout"
-                onclick="handleLogout()"
-                style="background: #ef4444; display: none"
-            >
-                <i class="fa-solid fa-right-from-bracket"></i> Sair
-            </button>
+            <div class="acoes-aluno" id="acoesAluno" style="display: none">
+                <button
+                    class="btn btn-acao-aluno"
+                    id="btnMudarSenha"
+                    onclick="abrirModalMudarSenha()"
+                    title="Mudar Senha"
+                >
+                    <i class="fa-solid fa-key"></i> Mudar Senha
+                </button>
+                <button
+                    class="btn btn-acao-aluno"
+                    id="btnMudarEmail"
+                    onclick="abrirModalMudarEmail()"
+                    title="Mudar E-mail"
+                >
+                    <i class="fa-solid fa-envelope"></i> Mudar E-mail
+                </button>
+                <button
+                    class="btn btn-remover"
+                    id="btnLogout"
+                    onclick="handleLogout()"
+                    style="background: #ef4444"
+                >
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </button>
+            </div>
 
             <div class="header-app">
                 <h1>
