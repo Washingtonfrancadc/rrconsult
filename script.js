@@ -1908,11 +1908,10 @@ function gerenciarIframeInjetado(exId, url) {
           staticLine.nextSibling,
         );
 
-        wrapperAnitgo.innerHTML = `<div class="iframe-scale-wrap" id="iframe-scale-wrap"><iframe src="${url}" allow="autoplay" scrolling="no" style="overflow:hidden;"></iframe></div>`;
+        wrapperAnitgo.innerHTML = `<iframe src="${url}" allow="autoplay" scrolling="no" style="overflow: hidden;"></iframe>`;
 
         setTimeout(() => {
           wrapperAnitgo.classList.add("aberto");
-          aplicarEscalaIframe();
         }, 50);
       }, 500);
     }
@@ -1924,11 +1923,9 @@ function gerenciarIframeInjetado(exId, url) {
   novaLinha.id = "linha-gif-dinamica";
   novaLinha.className = "linha-gif-inline";
   novaLinha.innerHTML = `
-                <td colspan="4" style="overflow:hidden;">
+                <td colspan="4">
                     <div class="wrapper-gif-inline" id="wrapper-gif-elemento">
-                        <div class="iframe-scale-wrap" id="iframe-scale-wrap">
-                            <iframe src="${url}" allow="autoplay" scrolling="no" style="overflow:hidden;"></iframe>
-                        </div>
+                        <iframe src="${url}" allow="autoplay" scrolling="no" style="overflow: hidden;"></iframe>
                     </div>
                 </td>
             `;
@@ -1936,37 +1933,11 @@ function gerenciarIframeInjetado(exId, url) {
   staticLine.parentNode.insertBefore(novaLinha, staticLine.nextSibling);
   idExercicioComGifAberto = exId;
 
-  // Aplica escala para caber no container
-  aplicarEscalaIframe();
-
   // Pequeno delay para iniciar transição
   setTimeout(() => {
     document.getElementById("wrapper-gif-elemento").classList.add("aberto");
   }, 50);
 }
-
-function aplicarEscalaIframe() {
-  const wrap = document.getElementById("iframe-scale-wrap");
-  const container = document.getElementById("wrapper-gif-elemento");
-  if (!wrap || !container) return;
-
-  const containerW = container.clientWidth;
-  const escala = Math.min(1, containerW / 363);
-  wrap.style.transform = "scale(" + escala + ")";
-  wrap.style.transformOrigin = "top left";
-
-  // Centraliza horizontalmente
-  const sobra = containerW - 363 * escala;
-  wrap.style.marginLeft = sobra > 0 ? sobra / 2 + "px" : "0";
-  wrap.style.marginTop = sobra > 0 ? sobra / 2 + "px" : "0";
-}
-
-// Recalcula escala quando a janela redimensionar
-window.addEventListener("resize", function () {
-  if (document.getElementById("linha-gif-dinamica")) {
-    aplicarEscalaIframe();
-  }
-});
 
 function alternarBlocoLayout(id, tipoAba) {
   const elClicado = document.getElementById(id);
