@@ -390,6 +390,24 @@ td {
     vertical-align: middle;
 }
 
+/* Exercício ocupa TODO o espaço disponível */
+th:first-child,
+td:first-child {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Séries, reps e descanso: no máximo 60px cada */
+th:not(:first-child),
+td:not(:first-child) {
+    width: 60px;
+    max-width: 60px;
+    white-space: nowrap;
+    text-align: center;
+    overflow: hidden;
+}
+
 .input-inline {
     background: #0f172a;
     color: white;

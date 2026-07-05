@@ -66,16 +66,7 @@ let diaArrastadoIdx = null;
 let refeicaoArrastadaCoords = { diaIdx: null, refIdx: null };
 
 // Listas globais estáticas para evitar recriação de arrays
-const LISTA_SERIES = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "1 (Aquec.)",
-  "2 (Aquec.)",
-  "7 (FST-7)",
-  "10 (GVT)",
-];
+const LISTA_SERIES = ["2", "3", "4", "5", "1", "2", "7 (FST-7)", "10 (GVT)"];
 const LISTA_REPS = [
   "8~12",
   "8~15",
@@ -2051,7 +2042,7 @@ function renderizarModoAluno() {
 
             let tdExercicio;
             if (temConjugado) {
-              tdExercicio = `<td style="white-space:nowrap;">
+              tdExercicio = `<td>
                   <span style="color:var(--cor-neon);cursor:pointer;" onclick="gerenciarIframeInjetado('${ex.id}', '${gifUrl1}')">
                     <i class="fa-solid fa-play-circle" id="icone-gif-${ex.id}" style="margin-right:3px;"></i>${nomeEx1}
                   </span>
