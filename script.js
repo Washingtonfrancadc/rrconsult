@@ -30,6 +30,7 @@ let feedbacksEvolucao = [];
 let carrosselPaginaAtual = 0;
 let carrosselAnguloAtual = "frente";
 let carrosselLarguraCard = 0;
+let gifAtualSendoExibido = "";
 
 let currentUser = {
   authId: null,
@@ -1908,7 +1909,7 @@ function gerenciarIframeInjetado(exId, url) {
           staticLine.nextSibling,
         );
 
-        wrapperAnitgo.innerHTML = `<iframe src="${url}" allow="autoplay" scrolling="no" style="overflow: hidden;"></iframe>`;
+        wrapperAnitgo.innerHTML = `<iframe src="${url}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen scrolling="no"></iframe>`;
 
         setTimeout(() => {
           wrapperAnitgo.classList.add("aberto");
@@ -1925,7 +1926,7 @@ function gerenciarIframeInjetado(exId, url) {
   novaLinha.innerHTML = `
                 <td colspan="4">
                     <div class="wrapper-gif-inline" id="wrapper-gif-elemento">
-                        <iframe src="${url}" allow="autoplay" scrolling="no" style="overflow: hidden;"></iframe>
+                        <iframe src="${url}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen scrolling="no"></iframe>
                     </div>
                 </td>
             `;
@@ -2456,12 +2457,18 @@ function mostrarPreviewExercicio(nome, gifUrl, e) {
 
   // Posiciona ao lado do elemento (position: fixed)
   const rect = e.target.getBoundingClientRect();
+  const previewWidth = Math.min(220, window.innerWidth - 20);
   let top = rect.top;
   let left = rect.right + 15;
 
   // Se não couber à direita, mostra à esquerda
-  if (left + 230 > window.innerWidth) {
-    left = rect.left - 230;
+  if (left + previewWidth > window.innerWidth) {
+    left = rect.left - previewWidth - 15;
+  }
+  // Se também não couber à esquerda, centraliza abaixo do elemento
+  if (left < 10) {
+    left = Math.max(10, (window.innerWidth - previewWidth) / 2);
+    top = rect.bottom + 10;
   }
   // Se não couber em cima/baixo, ajusta
   if (top + 300 > window.innerHeight) {
@@ -2469,6 +2476,7 @@ function mostrarPreviewExercicio(nome, gifUrl, e) {
   }
   if (top < 10) top = 10;
 
+  preview.style.width = previewWidth + "px";
   preview.style.top = top + "px";
   preview.style.left = left + "px";
 }
@@ -2723,6 +2731,14 @@ function trocarAlunoNoPainel(id) {
 function gerenciarAnimacaoGif(url) {
   const c = document.getElementById("containerGif");
   const ifr = document.getElementById("videoIframe");
+
+  if (!c || !ifr) {
+    // Fallback: usa o sistema inline caso o container dedicado nao exista
+    const primeiroExId = Object.keys(
+      dadosDoAluno.rotinasTreino[0]?.exercicios[0] || {},
+    )[0];
+    return;
+  }
 
   c.style.transition =
     "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, transform 0.5s ease-in-out, padding 0.5s ease-in-out";

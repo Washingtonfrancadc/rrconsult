@@ -435,7 +435,6 @@ td {
 }
 .wrapper-gif-inline {
     max-height: 0;
-    height: 363px;
     opacity: 0;
     overflow: hidden;
     transition:
@@ -443,25 +442,34 @@ td {
         opacity 0.5s ease,
         margin 0.5s ease,
         border-width 0.5s ease;
-    width: 363px;
+    width: min(364px, calc(100vw - 80px));
+    max-width: 100%;
+    position: relative;
     background: #111827;
     border-radius: 12px;
     margin: 0 auto;
     border: 0 solid var(--cor-neon);
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
 }
+.wrapper-gif-inline::before {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
 .wrapper-gif-inline.aberto {
-    max-height: 363px;
+    max-height: 500px;
     opacity: 1;
     margin: 15px auto;
     border-width: 2px;
 }
 .wrapper-gif-inline iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border: none;
     overflow: hidden;
-    pointer-events: none;
 }
 
 .grid-fotos {
@@ -597,6 +605,8 @@ td {
 .preview-exercicio-gif img,
 .preview-exercicio-gif iframe {
     width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
     border-radius: 4px;
     display: block;
 }
@@ -950,5 +960,27 @@ td {
     .acoes-aluno .btn-remover {
         padding: 5px 8px;
         font-size: 11px;
+    }
+
+    /* Ajustes do iframe para mobile */
+    table {
+        table-layout: fixed;
+    }
+    td {
+        word-break: break-word;
+    }
+    .wrapper-gif-inline {
+        width: calc(100vw - 80px);
+        max-width: 364px;
+    }
+    .wrapper-gif-inline.aberto {
+        max-height: 500px;
+    }
+    .linha-gif-inline td {
+        overflow: hidden;
+    }
+
+    .preview-exercicio-gif {
+        width: 160px;
     }
 }
