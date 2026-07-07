@@ -6,7 +6,12 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const SERVICE_ROLE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibGFkaXNiZ29zZ25hYW1hcnN0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTQ4NDc5OCwiZXhwIjoyMDk3MDYwNzk4fQ.mMRrCX1XyUkIxwQO5nLs5WfiIsbLNFtocKqyXhawPeY";
 
-let dadosDoAluno = { rotinasTreino: [], rotinasDieta: [] };
+let dadosDoAluno = {
+  rotinasTreino: [],
+  rotinasDieta: [],
+  observacoesTreino: "",
+  observacoesDieta: "",
+};
 let bibliotecaCompleta = [];
 let bibliotecaAlimentosCompleta = [];
 let listaGlobalAlunosCompleta = [];
@@ -1847,6 +1852,20 @@ async function puxarDadosDoAlunoDoBanco() {
       });
     }
   }
+  // Carregar observacoes do aluno
+  try {
+    let { data: alunoObs } = await _supabase
+      .from("alunos")
+      .select("observacoes_treino, observacoes_dieta")
+      .eq("id", alunoIdSelecionado)
+      .single();
+    dadosDoAluno.observacoesTreino = alunoObs?.observacoes_treino || "";
+    dadosDoAluno.observacoesDieta = alunoObs?.observacoes_dieta || "";
+  } catch (e) {
+    dadosDoAluno.observacoesTreino = "";
+    dadosDoAluno.observacoesDieta = "";
+  }
+
   dadosDoAluno.rotinasTreino = treinos;
   dadosDoAluno.rotinasDieta = dietas;
   renderizarInterface();
@@ -2029,6 +2048,12 @@ function alternarBlocoUnico(id) {
 
 // --- RENDERIZAR MODO ALUNO (VISUALIZAÇÃO) ---
 function renderizarModoAluno() {
+  // Remove observações antigas antes de re-renderizar
+  ["bloco-obs-treino", "bloco-obs-dieta"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+
   document.getElementById("container-blocos-treino").innerHTML =
     dadosDoAluno.rotinasTreino
       .map((b) => {
@@ -2120,7 +2145,7 @@ function renderizarModoAluno() {
             diaGord += refGord;
 
             return `
-                <div style="background:#111827;border-radius:8px;margin-bottom:15px;border:1px solid #334155;overflow:hidden;">
+                <div style="background:#111827;border-radius:8px;margin-bottom:0px;border:1px solid #334155;overflow:hidden;">
                     <div class="header-bloco-editavel" onclick="const el=document.getElementById('corpo-ref-${dia.idDia}-${ref.nomeRefeicao.replace(/\s/g, "")}');const aberta=!el.classList.contains('expandido');el.classList.toggle('expandido');estadosRefeicoesExpandidas['ref-${dia.idDia}-${ref.nomeRefeicao.replace(/\s/g, "")}']=aberta;this.classList.toggle('expandido');" style="padding:12px;margin-bottom:0;cursor:pointer;">
                         <span style="font-weight:bold;font-size:14px;color:var(--texto-claro);">${ref.nomeRefeicao}</span>
                         <span style="color:var(--cor-neon);font-size:13px;display:flex;align-items:center;gap:8px;">
@@ -2131,13 +2156,7 @@ function renderizarModoAluno() {
                     <div class="corpo-recolhivel ${estadosRefeicoesExpandidas["ref-" + dia.idDia + "-" + ref.nomeRefeicao.replace(/\s/g, "")] ? "expandido" : ""}" id="corpo-ref-${dia.idDia}-${ref.nomeRefeicao.replace(/\s/g, "")}">
                         <div class="corpo-recolhivel-inner">
                             <div style="padding:0 12px 12px;">
-                                <table><thead><tr><th>Alimento</th><th>Qtd</th><th>Macros</th></tr></thead><tbody>${linesAlimentos}</tbody></table>
-                                                            <div class="resumo-macros" style="margin-top:8px;">
-                                                                <div class="macro-box"><p>Kcal</p><div>${Math.round(refKcal)}</div></div>
-                                                                <div class="macro-box"><p>Carbo</p><div>${Math.round(refCarbo)}g</div></div>
-                                                                <div class="macro-box"><p>Prot</p><div>${Math.round(refProt)}g</div></div>
-                                                                <div class="macro-box"><p>Gord</p><div>${Math.round(refGord)}g</div></div>
-                                                            </div>
+                                <table style="table-layout:auto;"><thead><tr><th style="width:40%;">Alimento</th><th style="width:20%;">Qtd</th><th style="width:40%;">Macros</th></tr></thead><tbody>${linesAlimentos}</tbody></table>
                                                             </div>
                         </div>
                     </div>
@@ -2175,6 +2194,55 @@ function renderizarModoAluno() {
             </div>`;
       })
       .join("");
+
+  // --- OBSERVAÇÕES ---
+  const obsTreino = dadosDoAluno.observacoesTreino;
+  if (obsTreino) {
+    const div = document.createElement("div");
+    div.className = "bloco-observacoes";
+    div.id = "bloco-obs-treino";
+    div.innerHTML = `
+      <div class="header-bloco-editavel" onclick="this.classList.toggle('expandido'); document.getElementById('corpo-obs-treino').classList.toggle('expandido');">
+        <div class="titulo-secao" style="border-left-color: var(--texto-mutado);">
+          <i class="fa-solid fa-note-sticky" style="color: var(--cor-neon); margin-right: 8px;"></i>Observações
+          <i class="fa-solid fa-chevron-down seta-recolher"></i>
+        </div>
+      </div>
+      <div style="padding: 5px 0;"></div>
+      <div class="corpo-recolhivel" id="corpo-obs-treino">
+        <div class="corpo-recolhivel-inner">
+          <div style="background:#111827;border-radius:8px;border:1px solid #334155;padding:12px;">
+            <p style="margin:0;">${obsTreino.replace(/\n/g, "<br>")}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById("aba-treino").appendChild(div);
+  }
+
+  const obsDieta = dadosDoAluno.observacoesDieta;
+  if (obsDieta) {
+    const div = document.createElement("div");
+    div.className = "bloco-observacoes";
+    div.id = "bloco-obs-dieta";
+    div.innerHTML = `
+      <div class="header-bloco-editavel" onclick="this.classList.toggle('expandido'); document.getElementById('corpo-obs-dieta').classList.toggle('expandido');">
+        <div class="titulo-secao" style="border-left-color: var(--texto-mutado);">
+          <i class="fa-solid fa-note-sticky" style="color: var(--cor-neon); margin-right: 8px;"></i>Observações
+          <i class="fa-solid fa-chevron-down seta-recolher"></i>
+        </div>
+      </div>
+      <div style="padding: 5px 0;"></div>
+      <div class="corpo-recolhivel" id="corpo-obs-dieta">
+        <div class="corpo-recolhivel-inner">
+          <div style="background:#111827;border-radius:8px;border:1px solid #334155;padding:12px;">
+            <p style="margin:0;">${obsDieta.replace(/\n/g, "<br>")}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById("aba-dieta").appendChild(div);
+  }
 }
 
 // --- DRAG AND DROP (TREINO) ---
@@ -2271,6 +2339,9 @@ function dragRefeicaoEnd(event) {
 function renderizarModoTreinador() {
   removerLinhaGifComAnimacao();
 
+  // Remove observações antigas do modo treinador
+  document.querySelectorAll(".bloco-observacoes").forEach((el) => el.remove());
+
   // 1. Renderizar Treinos
   document.getElementById("container-blocos-treino").innerHTML =
     dadosDoAluno.rotinasTreino
@@ -2335,7 +2406,7 @@ function renderizarModoTreinador() {
                 ${d.refeicoes
                   .map(
                     (ref, rIdx) => `
-                    <div style="background:#111827;border-radius:8px;margin-bottom:12px;border:1px solid #334155;overflow:hidden;" draggable="true" ondragstart="dragRefeicaoStart(event, ${dIdx}, ${rIdx})" ondragover="dragRefeicaoOver(event, ${dIdx}, ${rIdx})" ondragend="dragRefeicaoEnd(event)">
+                    <div style="background:#111827;border-radius:8px;margin-bottom:px;border:1px solid #334155;overflow:hidden;" draggable="true" ondragstart="dragRefeicaoStart(event, ${dIdx}, ${rIdx})" ondragover="dragRefeicaoOver(event, ${dIdx}, ${rIdx})" ondragend="dragRefeicaoEnd(event)">
                         <div class="header-bloco-editavel" onclick="if(!event.target.classList.contains('drag-handle')){const el=document.getElementById('corpo-ref-trainer-${d.idDia}-${rIdx}');const aberta=!el.classList.contains('expandido');el.classList.toggle('expandido');estadosRefeicoesExpandidas['ref-trainer-${d.idDia}-${rIdx}']=aberta;this.classList.toggle('expandido');}" style="padding:10px;margin-bottom:0;cursor:pointer;">
                             <input type="text" class="input-inline" value="${ref.nomeRefeicao}" onchange="dadosDoAluno.rotinasDieta[${dIdx}].refeicoes[${rIdx}].nomeRefeicao=this.value" onclick="event.stopPropagation();">
                             <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
@@ -2385,6 +2456,49 @@ function renderizarModoTreinador() {
         </div>`,
       )
       .join("");
+
+  // --- OBSERVAÇÕES (EDITÁVEL NO MODO TREINADOR) ---
+  [
+    {
+      chave: "observacoesTreino",
+      containerId: "container-blocos-treino",
+      rotulo: "Observações do Treino",
+    },
+    {
+      chave: "observacoesDieta",
+      containerId: "conteudo-refeicoes-dinamicas",
+      rotulo: "Observações da Dieta",
+    },
+  ].forEach((obs) => {
+    const div = document.createElement("div");
+    div.className = "bloco-observacoes";
+    div.style.marginTop = "10px";
+    const idConteudo = "obs-content-" + obs.chave;
+    div.innerHTML = `
+      <div onclick="document.getElementById('${idConteudo}').classList.toggle('aberto'); this.querySelector('.obs-chevron').classList.toggle('fa-chevron-down'); this.querySelector('.obs-chevron').classList.toggle('fa-chevron-up');" style="display:flex;flex-direction:column;padding:12px;background:#111827;border-radius:8px;border:1px solid #334155;" class="obs-trainer-header">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <label style="color:var(--texto-mutado);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;">
+            <i class="fa-solid fa-note-sticky" style="color:var(--cor-neon);margin-right:6px;"></i>${obs.rotulo}
+          </label>
+          <i class="fa-solid fa-chevron-down obs-chevron" style="color:var(--cor-neon);font-size:12px;"></i>
+        </div>
+        <div class="obs-trainer-content" id="${idConteudo}">
+          <div style="padding: 5px 0;"></div>
+          <textarea
+            class="input-inline"
+            style="min-height:60px;resize:vertical;width:100%;"
+            placeholder="Escreva observações para o aluno..."
+            onchange="dadosDoAluno['${obs.chave}'] = this.value"
+            onclick="event.stopPropagation()"
+          >${dadosDoAluno[obs.chave] || ""}</textarea>
+        </div>
+      </div>
+    `;
+    const el = document.getElementById(obs.containerId);
+    if (el && el.parentElement) {
+      el.parentElement.appendChild(div);
+    }
+  });
 }
 
 // --- MODAIS DE BIBLIOTECA (EXERCÍCIOS / ALIMENTOS) ---
@@ -2705,6 +2819,19 @@ async function salvarAlteracoesNoBanco() {
         await _supabase.from("dieta_alimentos").insert(inserts);
     }
   }
+  // Salvar observacoes
+  try {
+    await _supabase
+      .from("alunos")
+      .update({
+        observacoes_treino: dadosDoAluno.observacoesTreino,
+        observacoes_dieta: dadosDoAluno.observacoesDieta,
+      })
+      .eq("id", alunoIdSelecionado);
+  } catch (e) {
+    // colunas ainda não existem no banco
+  }
+
   alert("Salvo com sucesso!");
   document.getElementById("btnEditar").click();
   await puxarDadosDoAlunoDoBanco();

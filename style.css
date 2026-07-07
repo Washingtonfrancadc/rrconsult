@@ -101,12 +101,12 @@ body {
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
+    overflow: hidden;
     transition:
         grid-template-rows 0.5s ease,
         opacity 0.5s ease;
 }
 .corpo-recolhivel-inner {
-    overflow: hidden;
     min-height: 0;
 }
 .bloco-secao.expandido > .corpo-recolhivel {
@@ -339,6 +339,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0px;
+    padding-bottom: 5px;
     gap: 15px;
     cursor: pointer;
     width: 100%;
@@ -350,6 +351,7 @@ body {
 .titulo-secao {
     border-left: 4px solid var(--cor-neon);
     padding-left: 10px;
+    padding-bottom: 0;
     font-size: 18px;
     font-weight: bold;
     flex-grow: 1;
@@ -379,7 +381,8 @@ th {
     text-align: left;
     color: var(--texto-mutado);
     font-size: 11px;
-    padding-bottom: 8px;
+    padding-top: 10px;
+    padding-bottom: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -425,8 +428,8 @@ td:not(:first-child) {
 .resumo-macros {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 15px;
+    gap: 0px;
+    margin-top: 0px;
     background: #111827;
     padding: 12px;
     border-radius: 8px;
@@ -924,6 +927,45 @@ td:not(:first-child) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.bloco-observacoes {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.bloco-observacoes .header-bloco-editavel {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+.bloco-observacoes .header-bloco-editavel .titulo-secao {
+    font-size: 15px;
+}
+.bloco-observacoes .corpo-recolhivel-inner {
+    padding: 10px 0 0;
+}
+.bloco-observacoes p {
+    color: var(--texto-claro);
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.obs-trainer-header {
+    cursor: pointer;
+    user-select: none;
+}
+.obs-trainer-header:hover {
+    border-color: var(--cor-neon) !important;
+}
+.obs-trainer-content {
+    display: none;
+}
+.obs-trainer-content.aberto {
+    display: block;
 }
 
 .btn-enviar {
