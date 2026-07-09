@@ -2,10 +2,6 @@ const SUPABASE_URL = "https://qbladisbgosgnaamarst.supabase.co";
 const SUPABASE_KEY = "sb_publishable_cJPpyWnFxOrxMORm3ZHURA_bxgy4jWX";
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Chave secreta para operações de admin (redefinir senha sem email)
-const SERVICE_ROLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibGFkaXNiZ29zZ25hYW1hcnN0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTQ4NDc5OCwiZXhwIjoyMDk3MDYwNzk4fQ.mMRrCX1XyUkIxwQO5nLs5WfiIsbLNFtocKqyXhawPeY";
-
 let dadosDoAluno = {
   rotinasTreino: [],
   rotinasDieta: [],
@@ -583,64 +579,8 @@ async function handleSetPassword() {
         error?.message?.toLowerCase().includes("email address already");
 
       if (jaExiste) {
-        // Tenta redefinir a senha direto via API de admin
-        if (SERVICE_ROLE_KEY) {
-          try {
-            const headers = {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-              apikey: SERVICE_ROLE_KEY,
-            };
-
-            // Busca TODOS os usuários e encontra pelo email
-            const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
-              headers,
-            });
-            const usersData = await res.json();
-            console.log(
-              "Admin API - users encontrados:",
-              usersData?.users?.length,
-            );
-            const existingUser = (usersData?.users || []).find(
-              (u) => u.email?.toLowerCase() === email,
-            );
-
-            if (existingUser?.id) {
-              // Atualiza a senha
-              const updateRes = await fetch(
-                `${SUPABASE_URL}/auth/v1/admin/users/${existingUser.id}`,
-                {
-                  method: "PUT",
-                  headers,
-                  body: JSON.stringify({ password }),
-                },
-              );
-
-              if (updateRes.ok) {
-                alert("Senha redefinida com sucesso!");
-                const { error: loginError } =
-                  await _supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                  });
-                if (!loginError) {
-                  window.location.reload();
-                  return;
-                }
-                document.getElementById("setPasswordStep").style.display =
-                  "none";
-                document.getElementById("passwordStep").style.display = "flex";
-                return;
-              }
-            }
-          } catch (e) {
-            console.error("Erro ao usar admin API:", e);
-          }
-        }
-
-        // Sem service_role — mostra mensagem
         alert(
-          "Este email já possui senha cadastrada. Para redefinir sem email, cole a chave SERVICE_ROLE_KEY no código (Settings > API no Supabase).",
+          "Este email já possui cadastro! Faça login ou use a opção 'Esqueci minha senha' na tela de login.",
         );
         document.getElementById("setPasswordStep").style.display = "none";
         document.getElementById("passwordStep").style.display = "flex";
@@ -2109,6 +2049,31 @@ function renderizarModoAluno() {
       })
       .join("");
 
+  // --- OBSERVAÇÕES DO TREINO ---
+  const obsTreino = dadosDoAluno.observacoesTreino;
+  if (obsTreino) {
+    const div = document.createElement("div");
+    div.className = "bloco-observacoes";
+    div.id = "bloco-obs-treino";
+    div.innerHTML = `
+      <div class="header-bloco-editavel" onclick="this.classList.toggle('expandido'); document.getElementById('corpo-obs-treino').classList.toggle('expandido');">
+        <div class="titulo-secao" style="border-left-color: var(--texto-mutado);">
+          <i class="fa-solid fa-note-sticky" style="color: var(--cor-neon); margin-right: 8px;"></i>Observações
+          <i class="fa-solid fa-chevron-down seta-recolher"></i>
+        </div>
+      </div>
+      <div style="padding: 5px 0;"></div>
+      <div class="corpo-recolhivel" id="corpo-obs-treino">
+        <div class="corpo-recolhivel-inner">
+          <div style="background:#111827;border-radius:8px;border:1px solid #334155;padding:12px;">
+            <p style="margin:0;">${obsTreino.replace(/\n/g, "<br>")}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById("aba-treino").appendChild(div);
+  }
+
   if (dadosDoAluno.rotinasDieta.length === 0) {
     document.getElementById("conteudo-refeicoes-dinamicas").innerHTML =
       '<p style="text-align:center; padding:20px; color:var(--texto-mutado);">Nenhuma dieta ativa cadastrada.</p>';
@@ -2194,31 +2159,6 @@ function renderizarModoAluno() {
             </div>`;
       })
       .join("");
-
-  // --- OBSERVAÇÕES ---
-  const obsTreino = dadosDoAluno.observacoesTreino;
-  if (obsTreino) {
-    const div = document.createElement("div");
-    div.className = "bloco-observacoes";
-    div.id = "bloco-obs-treino";
-    div.innerHTML = `
-      <div class="header-bloco-editavel" onclick="this.classList.toggle('expandido'); document.getElementById('corpo-obs-treino').classList.toggle('expandido');">
-        <div class="titulo-secao" style="border-left-color: var(--texto-mutado);">
-          <i class="fa-solid fa-note-sticky" style="color: var(--cor-neon); margin-right: 8px;"></i>Observações
-          <i class="fa-solid fa-chevron-down seta-recolher"></i>
-        </div>
-      </div>
-      <div style="padding: 5px 0;"></div>
-      <div class="corpo-recolhivel" id="corpo-obs-treino">
-        <div class="corpo-recolhivel-inner">
-          <div style="background:#111827;border-radius:8px;border:1px solid #334155;padding:12px;">
-            <p style="margin:0;">${obsTreino.replace(/\n/g, "<br>")}</p>
-          </div>
-        </div>
-      </div>
-    `;
-    document.getElementById("aba-treino").appendChild(div);
-  }
 
   const obsDieta = dadosDoAluno.observacoesDieta;
   if (obsDieta) {
