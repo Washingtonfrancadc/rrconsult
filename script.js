@@ -67,7 +67,7 @@ let diaArrastadoIdx = null;
 let refeicaoArrastadaCoords = { diaIdx: null, refIdx: null };
 
 // Listas globais estáticas para evitar recriação de arrays
-const LISTA_SERIES = ["1", "2", "3", "4", "5", "7 (FST-7)", "10 (GVT)"];
+const LISTA_SERIES = ["-", "1", "2", "3", "4", "5", "7 (FST-7)", "10 (GVT)"];
 const LISTA_REPS = [
   "8~12",
   "8~15",
@@ -82,6 +82,10 @@ const LISTA_REPS = [
   "15-12-10-8",
   "20-15-12",
   "MÁX.",
+  "20 Min",
+  "30 Min",
+  "40 Min",
+
 ];
 const LISTA_DESCANSO = [
   "-",
