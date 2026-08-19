@@ -301,6 +301,28 @@ body {
     display: block;
 }
 
+/* --- ABA CARGAS --- */
+.linha-carga {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #334155;
+}
+.linha-carga .nome-exercicio {
+    flex: 1;
+    color: var(--cor-neon);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    word-break: break-word;
+}
+.linha-carga input {
+    width: 80px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
 /* --- SELEÇÃO DE DIAS (DIETA ANTIGA / AUXILIAR) --- */
 .menu-dieta-dias {
     display: flex;

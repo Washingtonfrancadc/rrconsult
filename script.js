@@ -1822,7 +1822,83 @@ function renderizarInterface() {
   } else {
     renderizarModoAluno();
   }
+  renderizarCargas();
   carregarFeedbacksEvolucao();
+}
+
+// --- ABA CARGAS ---
+function getCargasStorageKey() {
+  return "cargas_" + (alunoIdSelecionado || "anon");
+}
+
+function carregarCargasDoStorage() {
+  try {
+    return JSON.parse(localStorage.getItem(getCargasStorageKey()) || "{}");
+  } catch (e) {
+    return {};
+  }
+}
+
+function salvarCargasNoStorage() {
+  const container = document.getElementById("container-cargas");
+  if (!container) return;
+  const cargas = {};
+  container.querySelectorAll("input[data-carga]").forEach((input) => {
+    cargas[input.dataset.carga] = input.value.trim();
+  });
+  localStorage.setItem(getCargasStorageKey(), JSON.stringify(cargas));
+  alert("Cargas salvas!");
+}
+
+function renderizarCargas() {
+  const container = document.getElementById("container-cargas");
+  if (!container) return;
+
+  if (dadosDoAluno.rotinasTreino.length === 0) {
+    container.innerHTML =
+      '<p style="text-align:center; padding:20px; color:var(--texto-mutado);">Nenhum treino cadastrado.</p>';
+    return;
+  }
+
+  const cargasSalvas = carregarCargasDoStorage();
+
+  container.innerHTML = dadosDoAluno.rotinasTreino
+    .map((b, bIdx) => {
+      let linhas = b.exercicios
+        .map((ex, exIdx) => {
+          let htmlLinhas = "";
+          // Primeiro exercício
+          htmlLinhas += `<div class="linha-carga">
+            <span class="nome-exercicio">${ex.nome}</span>
+            <input type="text" class="input-inline" placeholder="Carga" data-carga="${bIdx}_${exIdx}_0" value="${cargasSalvas[bIdx + "_" + exIdx + "_0"] || ""}" />
+          </div>`;
+          // Exercício conjugado
+          if (ex.nome2) {
+            htmlLinhas += `<div class="linha-carga">
+              <span class="nome-exercicio">${ex.nome2}</span>
+              <input type="text" class="input-inline" placeholder="Carga" data-carga="${bIdx}_${exIdx}_1" value="${cargasSalvas[bIdx + "_" + exIdx + "_1"] || ""}" />
+            </div>`;
+          }
+          return htmlLinhas;
+        })
+        .join("");
+
+      return `
+        <div class="bloco-secao">
+            <div class="header-bloco-editavel" onclick="this.classList.toggle('expandido'); document.getElementById('corpo-cargas-${bIdx}').classList.toggle('expandido');">
+                <div class="titulo-secao">${b.nomeBloco} <i class="fa-solid fa-chevron-down seta-recolher"></i></div>
+            </div>
+            <div class="corpo-recolhivel" id="corpo-cargas-${bIdx}">
+              <div class="corpo-recolhivel-inner">
+                ${linhas}
+                <button class="btn btn-salvar" onclick="salvarCargasNoStorage()" style="margin-top:15px;width:100%;justify-content:center;">
+                  <i class="fa-solid fa-floppy-disk"></i> Salvar Cargas
+                </button>
+              </div>
+            </div>
+        </div>`;
+    })
+    .join("");
 }
 
 // --- FUNÇÕES DE TRANSIÇÃO E GIF INLINE ---
