@@ -2180,7 +2180,7 @@ function renderizarModoAluno() {
                 refCarbo += al.carboTotal;
                 refProt += al.protTotal;
                 refGord += al.gordTotal;
-                return `<tr><td>${al.nome}</td><td>${al.quantidade}</td><td style="font-size:12px; color:var(--texto-mutado);">${Math.round(al.carboTotal)}g C / ${Math.round(al.protTotal)}g P / ${Math.round(al.gordTotal)}g G</td></tr>`;
+                return `<tr><td>${al.nome}</td><td>${al.quantidade}</td><td style="font-size:12px; color:var(--texto-mutado);">${Math.round(al.carboTotal)}g</td><td style="font-size:12px; color:var(--texto-mutado);">${Math.round(al.protTotal)}g</td><td style="font-size:12px; color:var(--texto-mutado);">${Math.round(al.gordTotal)}g</td><td style="font-size:12px; color:var(--cor-neon);">${Math.round(al.kcalTotal)}</td></tr>`;
               })
               .join("");
 
@@ -2201,7 +2201,7 @@ function renderizarModoAluno() {
                     <div class="corpo-recolhivel ${estadosRefeicoesExpandidas["ref-" + dia.idDia + "-" + ref.nomeRefeicao.replace(/\s/g, "")] ? "expandido" : ""}" id="corpo-ref-${dia.idDia}-${ref.nomeRefeicao.replace(/\s/g, "")}">
                         <div class="corpo-recolhivel-inner">
                             <div style="padding:0 12px 12px;">
-                                <table style="table-layout:auto;"><thead><tr><th style="width:40%;">Alimento</th><th style="width:20%;">Qtd</th><th style="width:40%;">Macros</th></tr></thead><tbody>${linesAlimentos}</tbody></table>
+                                <table style="table-layout:auto;"><thead><tr><th style="width:38%;">Alimento</th><th style="width:12%;">Qtd</th><th style="width:13%;">Carbo</th><th style="width:13%;">Prot</th><th style="width:12%;">Gord</th><th style="width:12%;">Kcal</th></tr></thead><tbody>${linesAlimentos}</tbody></table>
                                                             </div>
                         </div>
                     </div>
